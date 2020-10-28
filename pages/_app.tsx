@@ -1,7 +1,17 @@
+import {
+  RecoilRoot,
+} from 'recoil'
 import '../styles/globals.css'
+import '../lib/firebase'
+import '../hooks/auth'
 
 function MyApp({ Component, pageProps }) {
-  return <Component {...pageProps} />
+
+  return (
+    <RecoilRoot>
+      <Component {...pageProps} />
+    </RecoilRoot>
+    )
 }
 
 export default MyApp
