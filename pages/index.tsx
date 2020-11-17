@@ -1,7 +1,10 @@
+import Link from 'next/link'
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
+import { useAuthenticate } from '../hooks/auth'
 
-export default function Home() {
+const Home = () => {
+  const user = useAuthenticate()
   return (
     <div className={styles.container}>
       <Head>
@@ -47,6 +50,10 @@ export default function Home() {
               Instantly deploy your Next.js site to a public URL with Vercel.
             </p>
           </a>
+          <div>{user?.uid}</div>
+          <div>
+            <Link href="/myPage">マイページ</Link>
+          </div>
         </div>
       </main>
 
@@ -63,3 +70,4 @@ export default function Home() {
     </div>
   )
 }
+export default Home

@@ -1,10 +1,11 @@
 import { useEffect } from 'react'
-import { firebase } from '@firebase/app'
+import firebase from 'firebase'
 import { atom, useRecoilState } from 'recoil'
 
-type User = {
-  uid: string,
+export type User = {
+  uid: string
   isAnonymous: boolean
+  name: string
 }
 
 const userState = atom<User>({
@@ -12,24 +13,34 @@ const userState = atom<User>({
   default: null
 })
 
-export const authenticate = () => {
+const registrationUser = async (user: User) => {
+  const userRef = firebase.firestore().collection('users').doc(user.uid)
+  const doc = await userRef.get()
 
+  if (doc.exists) return
+
+  await userRef.set({
+    name: Math.random().toString(32).substring(2)
+  })
+}
+
+export const useAuthenticate = () => {
   const [user, setUser] = useRecoilState(userState)
 
   useEffect(() => {
-    if (user) return 
+    if (user) return
 
     firebase
       .auth()
       .signInAnonymously()
       .catch((e) => {
-        console.log(e.message)
+        console.log('Error', e.message)
       })
 
     firebase.auth().onAuthStateChanged((u) => {
       if (u) {
-        console.log(u)
-        setUser({uid: u.uid, isAnonymous: u.isAnonymous})
+        setUser({ uid: u.uid, isAnonymous: u.isAnonymous, name: u.displayName })
+        registrationUser(u)
       } else {
         setUser(null)
       }
